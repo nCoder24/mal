@@ -27,7 +27,7 @@ func EVAL(mal types.MalValue, env map[string]types.MalValue) (types.MalValue, er
 		return f(resolvedList[1:])
 	}
 
-	return nil, fmt.Errorf("cannot call %s", list[0])
+	return nil, fmt.Errorf("cannot call '%s'", list[0])
 }
 
 func evalAST(mal types.MalValue, env map[string]types.MalValue) (types.MalValue, error) {
@@ -66,7 +66,7 @@ func resolveSymbol(symbol types.Symbol, env map[string]types.MalValue) (types.Ma
 		return resolved, nil
 	}
 
-	return nil, fmt.Errorf("could not resolve symbol %s", symbol)
+	return nil, fmt.Errorf("could not resolve symbol '%s'", symbol)
 }
 
 func PRINT(mal types.MalValue) string {

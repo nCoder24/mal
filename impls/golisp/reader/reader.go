@@ -122,6 +122,8 @@ func readMap(reader *Reader) (types.Map, error) {
 	return readForms(reader, "}")
 }
 
+var strRegexp = regexp.MustCompile(`^".*"$`)
+
 func readAtom(reader *Reader) (types.MalValue, error) {
 	token := reader.peak()
 	if i, err := strconv.Atoi(token); err == nil {
@@ -129,7 +131,7 @@ func readAtom(reader *Reader) (types.MalValue, error) {
 	}
 
 	if strings.HasPrefix(token, "\"") {
-		if !strings.HasSuffix(token, "\"") {
+		if !strRegexp.MatchString(token) {
 			return nil, fmt.Errorf("expected '\"', got EOF")
 		}
 
