@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strconv"
+	"strings"
 
 	"github.com/nCoder24/mal/impls/golisp/types"
 )
@@ -121,5 +123,22 @@ func readMap(reader *Reader) (types.Map, error) {
 }
 
 func readAtom(reader *Reader) (types.MalValue, error) {
-	return reader.peak(), nil
+	token := reader.peak()
+	if i, err := strconv.Atoi(token); err == nil {
+		return types.Int(i), nil
+	}
+
+	if strings.HasPrefix(token, "\"") {
+		if !strings.HasSuffix(token, "\"") {
+			return nil, fmt.Errorf("expected '\"', got EOF")
+		}
+
+		return types.String(token), nil
+	}
+
+	if strings.HasPrefix(token, ":") {
+		return types.Keyword(token), nil
+	}
+
+	return types.Symbol(token), nil
 }

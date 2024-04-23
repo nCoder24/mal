@@ -5,9 +5,13 @@ import (
 	"strings"
 )
 
-type MalValue interface {
-}
+type MalValue interface{}
 
+type Symbol string
+type Int int
+type String string
+type Keyword string
+type Func func(args []MalValue) (MalValue, error)
 type List []MalValue
 type Vector []MalValue
 type Map []MalValue
