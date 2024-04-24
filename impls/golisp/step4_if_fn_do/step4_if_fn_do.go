@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/nCoder24/mal/impls/golisp/core"
 	environ "github.com/nCoder24/mal/impls/golisp/env"
 	"github.com/nCoder24/mal/impls/golisp/printer"
 	"github.com/nCoder24/mal/impls/golisp/reader"
@@ -128,7 +129,7 @@ func prompt(scanner *bufio.Scanner) bool {
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	env := newReplEnv()
+	env := environ.New(environ.WithData(core.Namespace))
 
 	for prompt(scanner) {
 		fmt.Println(rep(scanner.Text(), env))

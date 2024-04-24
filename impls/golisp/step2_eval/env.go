@@ -13,7 +13,7 @@ var env = map[string]types.MalValue{
 			return nil, err
 		}
 
-		res := types.Int(0)
+		res := types.Number(0)
 		for _, i := range ints {
 			res += i
 		}
@@ -41,7 +41,7 @@ var env = map[string]types.MalValue{
 			return nil, err
 		}
 
-		res := types.Int(1)
+		res := types.Number(1)
 		for _, i := range ints {
 			res *= i
 		}
@@ -64,11 +64,11 @@ var env = map[string]types.MalValue{
 	}),
 }
 
-func toInts(mals []types.MalValue) ([]types.Int, error) {
-	ints := make([]types.Int, 0, len(mals))
+func toInts(mals []types.MalValue) ([]types.Number, error) {
+	ints := make([]types.Number, 0, len(mals))
 
 	for _, arg := range mals {
-		i, ok := arg.(types.Int)
+		i, ok := arg.(types.Number)
 		if !ok {
 			return nil, fmt.Errorf("expected int, got %v", arg)
 		}

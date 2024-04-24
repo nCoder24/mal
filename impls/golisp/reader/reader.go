@@ -122,35 +122,58 @@ func readMap(reader *Reader) (types.Map, error) {
 	return readForms(reader, "}")
 }
 
-var strRegexp = regexp.MustCompile(`^".*"$`)
+var (
+	strRegexp = regexp.MustCompile(`^"`)
+	numRegexp = regexp.MustCompile(`^-?\d`)
+)
 
 func readAtom(reader *Reader) (types.MalValue, error) {
 	token := reader.peak()
 
-	switch token {
-	case "nil":
-		return nil, nil
-	case "true":
-		return true, nil
-	case "false":
-		return false, nil
-	}
+	switch {
+	case token == "nil":
+		return types.Nil, nil
 
-	if i, err := strconv.Atoi(token); err == nil {
-		return types.Int(i), nil
-	}
+	case token == "true":
+		return types.True, nil
 
-	if strings.HasPrefix(token, "\"") {
-		if !strRegexp.MatchString(token) {
+	case token == "false":
+		return types.False, nil
+
+	case numRegexp.MatchString(token):
+		i, err := strconv.ParseFloat(token, 64)
+		if err == nil {
+			return types.Number(i), nil
+		}
+
+		return nil, fmt.Errorf("cannot process number '%v': %w", token, err)
+
+	case strRegexp.MatchString(token):
+		if !closed(token) {
 			return nil, fmt.Errorf("expected '\"', got EOF")
 		}
 
 		return types.String(token), nil
-	}
 
-	if strings.HasPrefix(token, ":") {
+	case strings.HasPrefix(token, ":"):
 		return types.Keyword(token), nil
 	}
 
 	return types.Symbol(token), nil
+}
+
+func closed(strToken string) (closed bool) {
+	for i := 1; i < len(strToken); i++ {
+		char := string(strToken[i])
+		if char == "\"" {
+			closed = true
+			break
+		}
+
+		if char == "\\" {
+			i++
+		}
+	}
+
+	return
 }
