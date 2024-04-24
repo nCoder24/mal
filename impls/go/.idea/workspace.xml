@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="f4b87b2a-6e91-409c-b477-d3ee0f5259e7" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/../golisp/step3_env/env.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../golisp/step3_env/step3_env.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../golisp/reader/reader.go" beforeDir="false" afterPath="$PROJECT_DIR$/../golisp/reader/reader.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/../golisp/step2_eval/step2_eval.go" beforeDir="false" afterPath="$PROJECT_DIR$/../golisp/step2_eval/step2_eval.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../golisp/env/env.go" beforeDir="false" afterPath="$PROJECT_DIR$/../golisp/env/env.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../golisp/types/types.go" beforeDir="false" afterPath="$PROJECT_DIR$/../golisp/types/types.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />

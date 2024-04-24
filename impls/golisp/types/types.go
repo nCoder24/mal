@@ -37,3 +37,16 @@ func stringify(forms []MalValue) string {
 
 	return strings.Join(strs, " ")
 }
+
+func Seq(mal MalValue) ([]MalValue, bool) {
+	switch v := mal.(type) {
+	case List:
+		return v, true
+	case Vector:
+		return v, true
+	case Map:
+		return v, true
+	}
+
+	return nil, false
+}
