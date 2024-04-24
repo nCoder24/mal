@@ -71,11 +71,11 @@ var Namespace = map[string]types.MalValue{
 
 		for i := 1; i < len(nums); i++ {
 			if !(nums[i-1] < nums[i]) {
-				return false, nil
+				return types.Bool(false), nil
 			}
 		}
 
-		return true, nil
+		return types.Bool(true), nil
 	}),
 	">": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		nums, err := Numbers(args)
@@ -85,11 +85,11 @@ var Namespace = map[string]types.MalValue{
 
 		for i := 1; i < len(nums); i++ {
 			if !(nums[i-1] > nums[i]) {
-				return false, nil
+				return types.Bool(false), nil
 			}
 		}
 
-		return true, nil
+		return types.Bool(true), nil
 	}),
 	"<=": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		nums, err := Numbers(args)
@@ -99,11 +99,11 @@ var Namespace = map[string]types.MalValue{
 
 		for i := 1; i < len(nums); i++ {
 			if !(nums[i-1] <= nums[i]) {
-				return false, nil
+				return types.Bool(false), nil
 			}
 		}
 
-		return true, nil
+		return types.Bool(true), nil
 	}),
 	">=": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		nums, err := Numbers(args)
@@ -113,26 +113,30 @@ var Namespace = map[string]types.MalValue{
 
 		for i := 1; i < len(nums); i++ {
 			if !(nums[i-1] >= nums[i]) {
-				return false, nil
+				return types.Bool(false), nil
 			}
 		}
 
-		return true, nil
+		return types.Bool(true), nil
 	}),
 	"list": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		return types.List(args), nil
 	}),
 	"list?": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		_, ok := args[0].(types.List)
-		return ok, nil
+		return types.Bool(ok), nil
 	}),
 	"empty?": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		seq, err := types.Seq(args[0])
-		return len(seq) == 0, err
+		return types.Bool(len(seq) == 0), err
 	}),
 	"count": types.Func(func(args []types.MalValue) (types.MalValue, error) {
+		if _, ok := args[0].(types.NilPtr); ok {
+			return types.Number(0), nil
+		}
+
 		seq, err := types.Seq(args[0])
-		return len(seq), err
+		return types.Number(len(seq)), err
 	}),
 	"prn": types.Func(func(args []types.MalValue) (types.MalValue, error) {
 		prStrs := make([]any, 0, len(args))
@@ -161,7 +165,7 @@ func Numbers(mals []types.MalValue) ([]types.Number, error) {
 	return nums, nil
 }
 
-func deepEqual(a, b types.MalValue) bool {
+func deepEqual(a, b types.MalValue) types.Bool {
 	seqA, seqErrA := types.Seq(a)
 	seqB, seqErrB := types.Seq(b)
 

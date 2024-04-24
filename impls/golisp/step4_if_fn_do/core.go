@@ -61,12 +61,12 @@ func execIf(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 		return nil, err
 	}
 
-	if isTrue, ok := pred.(bool); pred == nil || ok && !isTrue {
+	if isTrue, ok := pred.(types.Bool); pred == types.Nil || ok && !bool(isTrue) {
 		if len(args) > 2 {
 			return EVAL(args[2], env)
 		}
 
-		return nil, nil
+		return types.Nil, nil
 	}
 
 	return EVAL(args[1], env)
