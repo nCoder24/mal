@@ -12,7 +12,8 @@ var (
 	False = Bool(false)
 )
 
-type MalValue interface{}
+type MalValue interface {
+}
 
 type Bool bool
 type NilPtr types.Nil
@@ -60,8 +61,6 @@ func Seq(val MalValue) ([]MalValue, error) {
 	case List:
 		return v, nil
 	case Vector:
-		return v, nil
-	case Map:
 		return v, nil
 	}
 
