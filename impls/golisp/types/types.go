@@ -28,6 +28,10 @@ func (v Map) String() string {
 	return "{" + stringify(v) + "}"
 }
 
+func (f Func) String() string {
+	return "#<function>"
+}
+
 func stringify(forms []MalValue) string {
 	strs := make([]string, 0, len(forms))
 
@@ -38,15 +42,15 @@ func stringify(forms []MalValue) string {
 	return strings.Join(strs, " ")
 }
 
-func Seq(mal MalValue) ([]MalValue, bool) {
-	switch v := mal.(type) {
+func Seq(val MalValue) ([]MalValue, error) {
+	switch v := val.(type) {
 	case List:
-		return v, true
+		return v, nil
 	case Vector:
-		return v, true
+		return v, nil
 	case Map:
-		return v, true
+		return v, nil
 	}
 
-	return nil, false
+	return nil, fmt.Errorf("cannot convert '%v' to seq", val)
 }

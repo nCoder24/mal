@@ -11,17 +11,16 @@ type Env struct {
 	data  map[string]types.MalValue
 }
 
-func New() *Env {
-	return &Env{
+func New(options ...Option) *Env {
+	env := &Env{
 		data: make(map[string]types.MalValue),
 	}
-}
 
-func NewWith(outer *Env) *Env {
-	return &Env{
-		outer: outer,
-		data:  make(map[string]types.MalValue),
+	for _, option := range options {
+		option(env)
 	}
+
+	return env
 }
 
 func (e *Env) find(key string) *Env {

@@ -59,12 +59,12 @@ func evalDef(mal types.MalValue, env *environment.Env) (types.MalValue, error) {
 }
 
 func evalLet(mal types.MalValue, env *environment.Env) (types.MalValue, error) {
-	letEnv := environment.NewWith(env)
+	letEnv := environment.New(environment.WithOuterEnv(env))
 	list := mal.(types.List)
 
-	bindings, ok := types.Seq(list[1])
-	if !ok {
-		return nil, fmt.Errorf("bindings must be sequence")
+	bindings, err := types.Seq(list[1])
+	if err != nil {
+		return nil, err
 	}
 
 	for i := 0; i < len(bindings); i += 2 {

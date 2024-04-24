@@ -7,5 +7,9 @@ import (
 )
 
 func PrStr(mal types.MalValue) string {
+	if mal == nil {
+		return "nil"
+	}
+
 	return fmt.Sprintf("%v", mal)
 }

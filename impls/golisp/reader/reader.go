@@ -126,6 +126,16 @@ var strRegexp = regexp.MustCompile(`^".*"$`)
 
 func readAtom(reader *Reader) (types.MalValue, error) {
 	token := reader.peak()
+
+	switch token {
+	case "nil":
+		return nil, nil
+	case "true":
+		return true, nil
+	case "false":
+		return false, nil
+	}
+
 	if i, err := strconv.Atoi(token); err == nil {
 		return types.Int(i), nil
 	}
