@@ -2,8 +2,10 @@ package main
 
 import (
 	"bufio"
+	"flag"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/nCoder24/mal/impls/golisp/core"
 	environ "github.com/nCoder24/mal/impls/golisp/env"
@@ -11,6 +13,25 @@ import (
 	"github.com/nCoder24/mal/impls/golisp/reader"
 	"github.com/nCoder24/mal/impls/golisp/types"
 )
+
+var debugging *bool
+
+func init() {
+	debugging = flag.Bool("debug", false, "Prints debug logs and stacktrace on panic")
+	flag.Parse()
+}
+
+func handlePanic() {
+	if err := recover(); err != nil {
+		fmt.Print("PANIC:", err)
+
+		if *debugging {
+			buf := make([]byte, 10000)
+			runtime.Stack(buf, false)
+			fmt.Printf("Stack trace : %s ", string(buf))
+		}
+	}
+}
 
 func READ(str string) (types.MalValue, error) {
 	return reader.ReadStr(str)
@@ -105,6 +126,8 @@ func PRINT(mal types.MalValue) string {
 }
 
 func rep(exp string, env *environ.Env) string {
+	defer handlePanic()
+
 	mal, err := READ(exp)
 	if err != nil {
 		return errorString(err)
