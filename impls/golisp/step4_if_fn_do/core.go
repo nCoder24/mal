@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"slices"
 
 	environ "github.com/nCoder24/mal/impls/golisp/env"
 	"github.com/nCoder24/mal/impls/golisp/types"
@@ -80,19 +81,43 @@ func execFn(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 			return nil, err
 		}
 
-		if len(bindings) != len(argList) {
+		bindTill, hasVariadicParam := slices.Index(bindings, types.MalValue(types.Symbol("&"))), true
+		if bindTill == -1 {
+			bindTill, hasVariadicParam = len(bindings), false
+		}
+
+		if !hasVariadicParam && len(bindings) != len(argList) {
 			return nil, fmt.Errorf("expected %d arguments, got %d", len(bindings), len(argList))
 		}
 
-		for i, symbol := range bindings {
-			val, err := EVAL(argList[i], env)
-			if err != nil {
-				return nil, err
-			}
+		values, err := evalMultiple(env, argList...)
+		if err != nil {
+			return nil, err
+		}
 
-			fnEnv.Set(string(symbol.(types.Symbol)), val)
+		for i := 0; i < bindTill; i++ {
+			fnEnv.Set(string(bindings[i].(types.Symbol)), values[i])
+		}
+
+		if hasVariadicParam {
+			fnEnv.Set(string(bindings[bindTill+1].(types.Symbol)), types.List(values[bindTill:]))
 		}
 
 		return EVAL(args[1], fnEnv)
 	}), nil
+}
+
+func evalMultiple(env *environ.Env, exprs ...types.MalValue) ([]types.MalValue, error) {
+	values := make([]types.MalValue, 0, len(exprs))
+
+	for _, form := range exprs {
+		value, err := EVAL(form, env)
+		if err != nil {
+			return nil, err
+		}
+
+		values = append(values, value)
+	}
+
+	return values, nil
 }
