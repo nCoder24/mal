@@ -115,7 +115,7 @@ func resolveSymbol(symbol types.Symbol, env *environment.Env) (types.MalValue, e
 }
 
 func PRINT(mal types.MalValue) string {
-	return printer.PrStr(mal)
+	return printer.PrStr(mal, true)
 }
 
 func rep(exp string, env *environment.Env) string {

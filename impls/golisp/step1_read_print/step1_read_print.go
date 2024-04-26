@@ -19,7 +19,7 @@ func EVAL(mal types.MalValue) (types.MalValue, error) {
 }
 
 func PRINT(mal types.MalValue) string {
-	return printer.PrStr(mal)
+	return printer.PrStr(mal, true)
 }
 
 func rep(exp string) string {

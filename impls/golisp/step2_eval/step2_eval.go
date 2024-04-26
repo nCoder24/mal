@@ -70,7 +70,7 @@ func resolveSymbol(symbol types.Symbol, env map[string]types.MalValue) (types.Ma
 }
 
 func PRINT(mal types.MalValue) string {
-	return printer.PrStr(mal)
+	return printer.PrStr(mal, true)
 }
 
 func rep(exp string) string {

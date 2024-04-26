@@ -122,7 +122,7 @@ func resolveSymbol(symbol types.Symbol, env *environ.Env) (types.MalValue, error
 }
 
 func PRINT(mal types.MalValue) string {
-	return printer.PrStr(mal)
+	return printer.PrStr(mal, true)
 }
 
 func rep(exp string, env *environ.Env) string {
@@ -149,6 +149,9 @@ func prompt(scanner *bufio.Scanner) bool {
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
 	env := environ.New(environ.WithLookup(core.Namespace))
+
+	// Builtin namespace
+	rep("(def! not (fn* (a) (if a false true)))", env)
 
 	for prompt(scanner) {
 		fmt.Println(rep(scanner.Text(), env))

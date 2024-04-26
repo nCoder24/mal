@@ -1,6 +1,7 @@
 package reader
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"regexp"
@@ -146,34 +147,27 @@ func readAtom(reader *Reader) (types.MalValue, error) {
 			return types.Number(i), nil
 		}
 
-		return nil, fmt.Errorf("cannot process number '%v': %w", token, err)
-
-	case strRegexp.MatchString(token):
-		if !closed(token) {
-			return nil, fmt.Errorf("expected '\"', got EOF")
+		if errors.Is(err, strconv.ErrSyntax) {
+			return nil, fmt.Errorf("'%v' is not a valid number", token)
 		}
 
-		return types.String(token), nil
+		return nil, err
+
+	case strRegexp.MatchString(token):
+		str, err := strconv.Unquote(token)
+		if err == nil {
+			return types.String(str), nil
+		}
+
+		if errors.Is(err, strconv.ErrSyntax) {
+			return nil, fmt.Errorf("expected \", got EOF")
+		}
+
+		return nil, err
 
 	case strings.HasPrefix(token, ":"):
 		return types.Keyword(token), nil
 	}
 
 	return types.Symbol(token), nil
-}
-
-func closed(strToken string) (closed bool) {
-	for i := 1; i < len(strToken); i++ {
-		char := string(strToken[i])
-		if char == "\"" {
-			closed = true
-			break
-		}
-
-		if char == "\\" {
-			i++
-		}
-	}
-
-	return
 }

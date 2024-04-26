@@ -43,6 +43,21 @@ func SymbolStrings(vals MalValue) ([]string, error) {
 	return symbols, nil
 }
 
+func Numbers(mals []MalValue) ([]Number, error) {
+	nums := make([]Number, 0, len(mals))
+
+	for _, arg := range mals {
+		i, ok := arg.(Number)
+		if !ok {
+			return nil, fmt.Errorf("expected number, got '%v'", arg)
+		}
+
+		nums = append(nums, i)
+	}
+
+	return nums, nil
+}
+
 func Sequence(val MalValue) ([]MalValue, error) {
 	switch v := val.(type) {
 	case List:
