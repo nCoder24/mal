@@ -1,9 +1,7 @@
 package types
 
 import (
-	"fmt"
 	"go/types"
-	"strings"
 )
 
 var (
@@ -44,25 +42,4 @@ func (v Map) String() string {
 
 func (f Func) String() string {
 	return "#<function>"
-}
-
-func stringify(forms []MalValue) string {
-	strs := make([]string, 0, len(forms))
-
-	for _, v := range forms {
-		strs = append(strs, fmt.Sprintf("%v", v))
-	}
-
-	return strings.Join(strs, " ")
-}
-
-func Seq(val MalValue) ([]MalValue, error) {
-	switch v := val.(type) {
-	case List:
-		return v, nil
-	case Vector:
-		return v, nil
-	}
-
-	return nil, fmt.Errorf("cannot convert '%v' to seq", val)
 }

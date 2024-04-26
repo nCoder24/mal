@@ -23,7 +23,7 @@ func init() {
 
 func handlePanic() {
 	if err := recover(); err != nil {
-		fmt.Print("PANIC:", err)
+		fmt.Print("panic: ", err)
 
 		if *debugging {
 			buf := make([]byte, 10000)
@@ -130,19 +130,15 @@ func rep(exp string, env *environ.Env) string {
 
 	mal, err := READ(exp)
 	if err != nil {
-		return errorString(err)
+		return fmt.Sprintf("syntax error: %v", err)
 	}
 
 	mal, err = EVAL(mal, env)
 	if err != nil {
-		return errorString(err)
+		return fmt.Sprintf("runtime error: %v", err)
 	}
 
 	return PRINT(mal)
-}
-
-func errorString(err error) string {
-	return "ERROR: " + err.Error()
 }
 
 func prompt(scanner *bufio.Scanner) bool {
@@ -152,7 +148,7 @@ func prompt(scanner *bufio.Scanner) bool {
 
 func main() {
 	scanner := bufio.NewScanner(os.Stdin)
-	env := environ.New(environ.WithData(core.Namespace))
+	env := environ.New(environ.WithLookup(core.Namespace))
 
 	for prompt(scanner) {
 		fmt.Println(rep(scanner.Text(), env))

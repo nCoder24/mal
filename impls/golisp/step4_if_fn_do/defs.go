@@ -14,7 +14,12 @@ func execDef(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 		return nil, err
 	}
 
-	env.Set(string(args[0].(types.Symbol)), val)
+	sym, err := types.SymbolString(args[0])
+	if err != nil {
+		return nil, err
+	}
+
+	env.Set(sym, val)
 
 	return val, nil
 }
@@ -22,7 +27,7 @@ func execDef(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 func execLet(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 	letEnv := environ.New(environ.WithOuterEnv(env))
 
-	bindings, err := types.Seq(args[0])
+	bindings, err := types.Sequence(args[0])
 	if err != nil {
 		return nil, err
 	}
@@ -33,7 +38,12 @@ func execLet(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 			return nil, err
 		}
 
-		letEnv.Set(string(bindings[i].(types.Symbol)), val)
+		str, err := types.SymbolString(bindings[i])
+		if err != nil {
+			return nil, err
+		}
+
+		letEnv.Set(str, val)
 	}
 
 	return EVAL(args[1], letEnv)
@@ -74,50 +84,16 @@ func execIf(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
 }
 
 func execFn(env *environ.Env, args []types.MalValue) (types.MalValue, error) {
-	return types.Func(func(argList []types.MalValue) (types.MalValue, error) {
-		fnEnv := environ.New(environ.WithOuterEnv(env))
-		bindings, err := types.Seq(args[0])
+	return types.Func(func(exprs []types.MalValue) (types.MalValue, error) {
+		symbols, err := types.SymbolStrings(args[0])
 		if err != nil {
 			return nil, err
 		}
 
-		bindTill, hasVariadicParam := slices.Index(bindings, types.MalValue(types.Symbol("&"))), true
-		if bindTill == -1 {
-			bindTill, hasVariadicParam = len(bindings), false
+		if !slices.Contains(symbols, "&") && len(symbols) != len(exprs) {
+			return nil, fmt.Errorf("expected %d arguments, got %d", len(symbols), len(exprs))
 		}
 
-		if !hasVariadicParam && len(bindings) != len(argList) {
-			return nil, fmt.Errorf("expected %d arguments, got %d", len(bindings), len(argList))
-		}
-
-		values, err := evalMultiple(env, argList...)
-		if err != nil {
-			return nil, err
-		}
-
-		for i := 0; i < bindTill; i++ {
-			fnEnv.Set(string(bindings[i].(types.Symbol)), values[i])
-		}
-
-		if hasVariadicParam {
-			fnEnv.Set(string(bindings[bindTill+1].(types.Symbol)), types.List(values[bindTill:]))
-		}
-
-		return EVAL(args[1], fnEnv)
+		return EVAL(args[1], environ.New(environ.WithOuterEnv(env), environ.WithBindings(symbols, exprs)))
 	}), nil
-}
-
-func evalMultiple(env *environ.Env, exprs ...types.MalValue) ([]types.MalValue, error) {
-	values := make([]types.MalValue, 0, len(exprs))
-
-	for _, form := range exprs {
-		value, err := EVAL(form, env)
-		if err != nil {
-			return nil, err
-		}
-
-		values = append(values, value)
-	}
-
-	return values, nil
 }

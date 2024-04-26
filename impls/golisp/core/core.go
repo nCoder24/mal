@@ -127,7 +127,7 @@ var Namespace = map[string]types.MalValue{
 		return types.Bool(ok), nil
 	}),
 	"empty?": types.Func(func(args []types.MalValue) (types.MalValue, error) {
-		seq, err := types.Seq(args[0])
+		seq, err := types.Sequence(args[0])
 		return types.Bool(len(seq) == 0), err
 	}),
 	"count": types.Func(func(args []types.MalValue) (types.MalValue, error) {
@@ -135,7 +135,7 @@ var Namespace = map[string]types.MalValue{
 			return types.Number(0), nil
 		}
 
-		seq, err := types.Seq(args[0])
+		seq, err := types.Sequence(args[0])
 		return types.Number(len(seq)), err
 	}),
 	"prn": types.Func(func(args []types.MalValue) (types.MalValue, error) {
@@ -166,8 +166,8 @@ func Numbers(mals []types.MalValue) ([]types.Number, error) {
 }
 
 func deepEqual(a, b types.MalValue) types.Bool {
-	seqA, seqErrA := types.Seq(a)
-	seqB, seqErrB := types.Seq(b)
+	seqA, seqErrA := types.Sequence(a)
+	seqB, seqErrB := types.Sequence(b)
 
 	if seqErrA != nil && seqErrB != nil {
 		return a == b

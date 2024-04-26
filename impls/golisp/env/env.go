@@ -7,13 +7,13 @@ import (
 )
 
 type Env struct {
-	outer *Env
-	data  map[string]types.MalValue
+	outer  *Env
+	lookup map[string]types.MalValue
 }
 
 func New(options ...Option) *Env {
 	env := &Env{
-		data: make(map[string]types.MalValue),
+		lookup: make(map[string]types.MalValue),
 	}
 
 	for _, option := range options {
@@ -24,7 +24,7 @@ func New(options ...Option) *Env {
 }
 
 func (e *Env) find(key string) *Env {
-	if _, ok := e.data[key]; ok {
+	if _, ok := e.lookup[key]; ok {
 		return e
 	}
 
@@ -37,12 +37,12 @@ func (e *Env) find(key string) *Env {
 
 func (e *Env) Get(key string) (types.MalValue, error) {
 	if env := e.find(key); env != nil {
-		return env.data[key], nil
+		return env.lookup[key], nil
 	}
 
 	return nil, fmt.Errorf("symbol '%s' not found", key)
 }
 
 func (e *Env) Set(key string, value types.MalValue) {
-	e.data[key] = value
+	e.lookup[key] = value
 }

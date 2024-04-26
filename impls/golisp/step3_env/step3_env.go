@@ -62,7 +62,7 @@ func evalLet(mal types.MalValue, env *environment.Env) (types.MalValue, error) {
 	letEnv := environment.New(environment.WithOuterEnv(env))
 	list := mal.(types.List)
 
-	bindings, err := types.Seq(list[1])
+	bindings, err := types.Sequence(list[1])
 	if err != nil {
 		return nil, err
 	}
