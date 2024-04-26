@@ -2,6 +2,7 @@ package types
 
 import (
 	"go/types"
+	"strconv"
 )
 
 var (
@@ -24,10 +25,24 @@ type Vector []MalValue
 type Map []MalValue
 type Func func(args []MalValue) (MalValue, error)
 
+type Env interface {
+}
+
+type DefinedFunc struct {
+	Func
+	Env      any
+	Bindings []string
+	Body     MalValue
+}
+
 func (n NilPtr) String() string {
 	return "nil"
 }
 
 func (f Func) String() string {
 	return "#<function>"
+}
+
+func (n Number) String() string {
+	return strconv.FormatFloat(float64(n), 'f', -1, 64)
 }
