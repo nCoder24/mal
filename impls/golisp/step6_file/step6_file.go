@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -156,6 +157,10 @@ func rep(exp string, env *environ.Env) string {
 
 	mal, err := READ(exp)
 	if err != nil {
+		if errors.Is(err, reader.ErrEmptyLine) {
+			return ""
+		}
+
 		return fmt.Sprintf("syntax error: %v", err)
 	}
 

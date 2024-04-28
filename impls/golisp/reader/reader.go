@@ -35,8 +35,16 @@ func (r *Reader) isEOF() bool {
 	return r.pos >= len(r.tokens)
 }
 
+var ErrEmptyLine = errors.New("empty line")
+
 func ReadStr(str string) (types.MalValue, error) {
-	return readForm(NewReader(tokenize(str)))
+	tokens := tokenize(str)
+
+	if len(tokens) == 0 {
+		return nil, ErrEmptyLine
+	}
+
+	return readForm(NewReader(tokens))
 }
 
 var tokenRegexp = regexp.MustCompile(
@@ -48,6 +56,10 @@ func tokenize(str string) []string {
 	tokens := make([]string, 0)
 
 	for _, match := range tokenRegexp.FindAllStringSubmatch(str, -1) {
+		if (match[1] == "") || (match[1][0] == ';') {
+			continue
+		}
+
 		tokens = append(tokens, match[1:]...)
 	}
 
@@ -124,8 +136,9 @@ func readMap(reader *Reader) (types.Map, error) {
 }
 
 var (
-	strRegexp = regexp.MustCompile(`^"`)
-	numRegexp = regexp.MustCompile(`^-?\d`)
+	strRegexp    = regexp.MustCompile(`^"`)
+	numRegexp    = regexp.MustCompile(`^-?\d`)
+	symbolRegexp = regexp.MustCompile(`^\D`)
 )
 
 func readAtom(reader *Reader) (types.MalValue, error) {
@@ -167,7 +180,10 @@ func readAtom(reader *Reader) (types.MalValue, error) {
 
 	case strings.HasPrefix(token, ":"):
 		return types.Keyword(token), nil
+
+	case symbolRegexp.MatchString(token):
+		return types.Symbol(token), nil
 	}
 
-	return types.Symbol(token), nil
+	return nil, fmt.Errorf("unexpected token: %v", token)
 }
