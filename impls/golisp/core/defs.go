@@ -2,9 +2,11 @@ package core
 
 import (
 	"fmt"
+	"os"
 	"strings"
 
 	"github.com/nCoder24/mal/impls/golisp/printer"
+	"github.com/nCoder24/mal/impls/golisp/reader"
 	"github.com/nCoder24/mal/impls/golisp/types"
 )
 
@@ -177,4 +179,25 @@ func printLine(args []types.MalValue) (types.MalValue, error) {
 	fmt.Println(strings.Join(strs, " "))
 
 	return types.Nil, nil
+}
+
+func readStr(args []types.MalValue) (types.MalValue, error) {
+	if raw, ok := args[0].(types.String); ok {
+		return reader.ReadStr(string(raw))
+	}
+
+	return nil, fmt.Errorf("argument must be a string")
+}
+
+func slurp(args []types.MalValue) (types.MalValue, error) {
+	if path, ok := args[0].(types.String); ok {
+		content, err := os.ReadFile(string(path))
+		if err != nil {
+			return nil, fmt.Errorf("error while reading file '%s': %w", content, err)
+		}
+
+		return types.String(content), nil
+	}
+
+	return nil, fmt.Errorf("argument must be a string")
 }

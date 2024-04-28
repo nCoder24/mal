@@ -2,7 +2,6 @@ package printer
 
 import (
 	"fmt"
-	"strconv"
 	"strings"
 
 	"github.com/nCoder24/mal/impls/golisp/types"
@@ -12,7 +11,7 @@ func PrStr(mal types.MalValue, quoted bool) string {
 	switch v := mal.(type) {
 	case types.String:
 		if quoted {
-			return strconv.Quote(string(v))
+			return fmt.Sprintf("%q", v)
 		}
 
 		return string(v)

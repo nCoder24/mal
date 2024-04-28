@@ -160,7 +160,7 @@ func readAtom(reader *Reader) (types.MalValue, error) {
 		}
 
 		if errors.Is(err, strconv.ErrSyntax) {
-			return nil, fmt.Errorf("expected \", got EOF")
+			return nil, fmt.Errorf("expected '\"', got EOF")
 		}
 
 		return nil, err
